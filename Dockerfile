@@ -1,10 +1,8 @@
 FROM ipeddocker/dependencies
 
-RUN wget -P /tmp/ http://mirror.nbtelecom.com.br/apache/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.tar.gz
-RUN tar xkf /tmp/apache-maven-3.5.3-bin.tar.gz -C /opt/
-RUN ln -s /opt/apache-maven-3.5.3/bin/mvn /bin/
-
-COPY m2 /root/.m2/
+RUN GET http://mirror.nbtelecom.com.br/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz > /tmp/apache-maven-3.6.0-bin.tar.gz
+RUN tar xkf /tmp/apache-maven-3.6.0-bin.tar.gz -C /opt/
+RUN ln -s /opt/apache-maven-3.6.0/bin/mvn /bin/
 
 RUN mvn install:install-file \
       -Dfile=/usr/share/java/sleuthkit-4.6.0.jar \
@@ -13,6 +11,13 @@ RUN mvn install:install-file \
       -Dversion=4.6.0 \
       -Dpackaging=jar \
       -DgeneratePom=true
+
+RUN apt-get update && apt-get install -y \
+      openjdk-8-jdk \
+&&  apt-get clean \
+&&  rm -rf /var/lib/apt/lists/*
+
+COPY m2 /root/.m2/
 
 WORKDIR /usr/local/src/iped/iped-ahocorasick/
 COPY iped-ahocorasick .
